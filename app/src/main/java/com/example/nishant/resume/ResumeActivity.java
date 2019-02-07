@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -29,7 +28,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,7 +40,6 @@ import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
-import com.google.ar.core.exceptions.NotYetAvailableException;
 import com.google.ar.core.exceptions.UnavailableException;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
@@ -51,8 +48,6 @@ import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
-import com.google.ar.sceneform.rendering.PlaneRenderer;
-import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -64,7 +59,7 @@ import java.util.concurrent.ExecutionException;
  * This is a simple example that shows how to create an augmented reality (AR) application using the
  * ARCore and Sceneform APIs.
  */
-public class SolarActivity extends AppCompatActivity {
+public class ResumeActivity extends AppCompatActivity {
     private static final int RC_PERMISSIONS = 0x123;
     private boolean installRequested;
 
@@ -106,9 +101,6 @@ public class SolarActivity extends AppCompatActivity {
         setContentView(R.layout.activity_solar);
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ar_scene_view);
         arSceneView = arFragment.getArSceneView();
-//        arFragment.getPlaneDiscoveryController().hide();
-//        arFragment.getPlaneDiscoveryController().setInstructionView(null);
-
 
         try {
             Session session = DemoUtils.createArSession(this, installRequested);
@@ -502,14 +494,14 @@ public class SolarActivity extends AppCompatActivity {
         // The planet is positioned relative to the orbit so that it appears to rotate around the sun.
         // This is done instead of making the sun rotate so each planet can orbit at its own speed.
 
-        RotatingNode orbit = new RotatingNode( true);
-        orbit.setDegreesPerSecond(orbitDegreesPerSecond);
-        orbit.setParent(parent);
+//        RotatingNode orbit = new RotatingNode( true);
+//        orbit.setDegreesPerSecond(orbitDegreesPerSecond);
+//        orbit.setParent(parent);
 
         // Create the planet and position it relative to the sun.
 
         Node node = new Node();
-        node.setParent(orbit);
+        node.setParent(parent);
         node.setRenderable(renderable);
 
 //        View v = renderable.getView();
@@ -559,37 +551,12 @@ public class SolarActivity extends AppCompatActivity {
 
 
 
-    private Node createDescriptionData(String name, Node parent, float auFromParent, float orbitDegreesPerSecond, ViewRenderable renderable, float planetScale,int pos) {
-        // Orbit is a rotating node with no renderable positioned at the sun.
-        // The planet is positioned relative to the orbit so that it appears to rotate around the sun.
-        // This is done instead of making the sun rotate so each planet can orbit at its own speed.
-
-//        RotatingNode orbit = new RotatingNode(solarSettings, true);
-//        orbit.setDegreesPerSecond(orbitDegreesPerSecond);
-//        orbit.setParent(parent);
-
-        // Create the planet and position it relative to the sun.
-        Planet planet = new Planet(this, name, planetScale, renderable, solarSettings);
-
-        planet.setParent(parent);
-        if (pos==0) {
-            planet.setLocalPosition(new Vector3(auFromParent * AU_TO_METERS, 0.0f, 0.0f));
-        }
-        if (pos ==1){
-            planet.setLocalPosition(new Vector3(0.0f,auFromParent * AU_TO_METERS, 0.0f));
-        }
-        else if(pos==2){
-            planet.setLocalPosition(new Vector3(0.0f,0.0f,auFromParent * AU_TO_METERS));
-        }
-        return planet;
-    }
-
     private void showLoadingMessage() {
         if (loadingMessageSnackbar != null && loadingMessageSnackbar.isShownOrQueued()) {
             return;
         }
 
-        loadingMessageSnackbar = Snackbar.make(SolarActivity.this.findViewById(android.R.id.content), "Finding plane", Snackbar.LENGTH_INDEFINITE);
+        loadingMessageSnackbar = Snackbar.make(ResumeActivity.this.findViewById(android.R.id.content), "Finding plane", Snackbar.LENGTH_INDEFINITE);
         loadingMessageSnackbar.getView().setBackgroundColor(0xbf323232);
         loadingMessageSnackbar.show();
     }
