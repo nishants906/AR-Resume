@@ -21,7 +21,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -48,6 +50,8 @@ import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.PlaneRenderer;
+import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -70,8 +74,7 @@ public class ResumeActivity extends AppCompatActivity {
     private ArSceneView arSceneView;
 
     private ModelRenderable sunRenderable;
-    private ViewRenderable descriptiondata,descriptiondata1,descriptiondata2,descriptiondata3,resume,aboutme,fella,halanx,zoruk,wipro,taproom,escale;
-
+    private ViewRenderable descriptiondata,descriptiondata1,descriptiondata2,descriptiondata3,resume,aboutme,fella,halanx,zoruk,wipro,taproom,escale,metr,twel,gradu;
 
     // True once scene is loaded
     private boolean hasFinishedLoading = false;
@@ -120,31 +123,32 @@ public class ResumeActivity extends AppCompatActivity {
 
 // To apply texture on plane rendering
 
-//        Texture.Sampler sampler = Texture.Sampler.builder()
-//                .setMinFilter(Texture.Sampler.MinFilter.LINEAR)
-//                .setMagFilter(Texture.Sampler.MagFilter.LINEAR)
-//                .setWrapMode(Texture.Sampler.WrapMode.REPEAT).build();
-//
-//        // Build texture with sampler
-//        CompletableFuture<Texture> trigrid = Texture.builder()
-//                .setSource(this, R.drawable.self)
-//                .setSampler(sampler).build();
-//
-//        // Set plane texture
-//        this.arFragment.getArSceneView()
-//                .getPlaneRenderer()
-//                .getMaterial()
-//                .thenAcceptBoth(trigrid, (material, texture) -> {
-//                    material.setTexture(PlaneRenderer.MATERIAL_TEXTURE, texture);
-//                })
-//                .exceptionally(throwable -> {
-//                    Log.d("enter1",throwable.getMessage());
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//                    builder.setMessage(throwable.getMessage()).setTitle("Error");
-//                    AlertDialog dialog = builder.create();
-//                    dialog.show();
-//                    return null;
-//                });
+        Texture.Sampler sampler = Texture.Sampler.builder()
+                .setMinFilter(Texture.Sampler.MinFilter.LINEAR)
+                .setMagFilter(Texture.Sampler.MagFilter.LINEAR)
+
+                .setWrapMode(Texture.Sampler.WrapMode.REPEAT).build();
+
+        // Build texture with sampler
+        CompletableFuture<Texture> trigrid = Texture.builder()
+                .setSource(ResumeActivity.this,R.drawable.fill)
+                .setSampler(sampler).build();
+
+        // Set plane texture
+        this.arFragment.getArSceneView()
+                .getPlaneRenderer()
+                .getMaterial()
+                .thenAcceptBoth(trigrid, (material, texture) -> {
+                    material.setTexture(PlaneRenderer.MATERIAL_TEXTURE, texture);
+                })
+                .exceptionally(throwable -> {
+                    Log.d("enter1",throwable.getMessage());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setMessage(throwable.getMessage()).setTitle("Error");
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    return null;
+                });
 //
 
         // Build all the planet models.
@@ -161,7 +165,10 @@ public class ResumeActivity extends AppCompatActivity {
         CompletableFuture<ViewRenderable> zoru = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
         CompletableFuture<ViewRenderable> escal = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
         CompletableFuture<ViewRenderable> taproo = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
-        CompletableFuture<ViewRenderable> resume1 = ViewRenderable.builder().setView(this, R.layout.imageview).build();
+        CompletableFuture<ViewRenderable> metric = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
+        CompletableFuture<ViewRenderable> twelth = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
+        CompletableFuture<ViewRenderable> grad = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
+        CompletableFuture<ViewRenderable> resume1 = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
 
         CompletableFuture.allOf(sunStage,descriptionstage,descriptionstage1,descriptionstage2,resume1).handle((notUsed, throwable) -> {
             // When you build a Renderable, Sceneform loads its resources in the background while
@@ -185,6 +192,9 @@ public class ResumeActivity extends AppCompatActivity {
                 taproom = taproo.get();
                 escale = escal.get();
                 zoruk = zoru.get();
+                metr = metric.get();
+                twel = twelth.get();
+                gradu = grad.get();
 
                 aboutme = about.get();
                 resume = resume1.get();
@@ -383,76 +393,133 @@ public class ResumeActivity extends AppCompatActivity {
 
         sunVisual.setLocalScale(new Vector3(0.5f, 0.5f, 0.5f));
 
-        Node sc = createNode("About",sun,0.5f,descriptiondata,0);
+        Node sc = createNode(String.valueOf(Html.fromHtml("<b>About</b>")),sun,0.5f,descriptiondata,0,14);
         sc.setLocalPosition(new Vector3(0.0f,0.45f * AU_TO_METERS, 0.0f));
 
-        Node s1 = createNode("Education",sun,0.5f,descriptiondata1,0);
+        Node s1 = createNode(String.valueOf(Html.fromHtml("<b>Education</b>")),sun,0.5f,descriptiondata1,0,14);
         s1.setLocalPosition(new Vector3(0.55f * AU_TO_METERS, 0.0f, 0.0f));
 
-        Node s2 = createNode("Work \n Experience",sun,0.5f,descriptiondata2,0);
-        s2.setLocalPosition(new Vector3(-0.65f * AU_TO_METERS, -0.05f, 0.0f));
+        Node s2 = createNode("Work \n Experience",sun,0.5f,descriptiondata2,0,14);
+        s2.setLocalPosition(new Vector3(-0.67f * AU_TO_METERS, -0.05f, 0.0f));
 
-        Node s3 = createNode("Resume",sun,0.5f,descriptiondata3,0);
+        Node s3 = createNode("Resume",sun,0.5f,descriptiondata3,0,14);
         s3.setLocalPosition(new Vector3(0.0f,-0.8f * AU_TO_METERS, 0.0f));
 
-        TransformableNode s4 = createtranformablenode("Resume",s3,0.5f,resume,0);
-        s4.setLocalPosition(new Vector3(-0.1f,-2.5f,0.8f * AU_TO_METERS));
+
+
+        Node s4 = createNode("",s3,0.5f,resume,0,14);
+        s4.setLocalPosition(new Vector3(-0.1f,-2f,2.5f * AU_TO_METERS));
         s4.setEnabled(false);
+
+        im = resume.getView().findViewById(R.id.im_pic);
+        im.setImageResource(R.drawable.res);
 
         Quaternion q3 = s4.getLocalRotation();
         Quaternion q4 = new Quaternion(new Vector3(-0.5f,0f,0f),100);
         s4.setLocalRotation(Quaternion.multiply(q3, q4));
 
-        Node s5 = createNode("Nishant Sardana \n 9711556178",sc,0.5f,aboutme,0);
+        Node s5 = createNode("Nishant Sardana \n 9711556178",sc,0.5f,aboutme,0,10);
         ImageView im = (ImageView) aboutme.getView().findViewById(R.id.im_pic);
         im.setImageResource(R.drawable.self);
         s5.setEnabled(false);
         s5.setLocalPosition(new Vector3(0.0f,0.2f, 0.0f));
 
-        sc.setOnTapListener((hitTestResult, motionEvent) -> s5.setEnabled(!s5.isEnabled()));
-        s3.setOnTapListener((hitTestResult, motionEvent) -> s4.setEnabled(!s4.isEnabled()));
 
 
 
-
-        Node c1 = createrotatingnode("Resume",s2,0.05f,5,zoruk,0);
-        c1.setLocalScale(new Vector3(0.08f,0.08f,0.08f));
-        c1.setLocalPosition(new Vector3(0,0.2f,0));
-        im = (ImageView) zoruk.getView().findViewById(R.id.im_pic);
-        im.setImageResource(R.drawable.zoruk);
-
-        Node c2 = createrotatingnode("Resume",s2,0.05f,5,escale,0);
-        c2.setLocalScale(new Vector3(0.08f,0.08f,0.08f));
-
-        c2.setLocalPosition(new Vector3(0.25f,0,0));
-        im = (ImageView) escale.getView().findViewById(R.id.im_pic);
-        im.setImageResource(R.drawable.escale);
-
-        Node c3 = createrotatingnode("Resume",s2,0.05f,5,fella,0);
-        c3.setLocalScale(new Vector3(0.08f,0.08f,0.08f));
-
-        c3.setLocalPosition(new Vector3(0.2f,0.2f,0));
-        im = (ImageView) fella.getView().findViewById(R.id.im_pic);
-        im.setImageResource(R.drawable.fellafeed);
-
-        Node c4 = createrotatingnode("Resume",s2,0.05f,5,taproom,0);
-        c4.setLocalScale(new Vector3(0.08f,0.08f,0.08f));
-
-        c4.setLocalPosition(new Vector3(0.2f,-0.05f,0));
-        im = (ImageView) taproom.getView().findViewById(R.id.im_pic);
-        im.setImageResource(R.drawable.taproom);
-
-        Node c5 = createrotatingnode("Resume",s2,0.05f,5,wipro,0);
-        c5.setLocalScale(new Vector3(0.08f,0.08f,0.08f));
-        c5.setLocalPosition(new Vector3(-0.2f,0.2f,0));
-        im = (ImageView) wipro.getView().findViewById(R.id.im_pic);
+        Node c1 = createNode("",s2,0.05f,wipro,0,14);
+        c1.setLocalScale(new Vector3(0.1f,0.1f,0.1f));
+        c1.setLocalPosition(new Vector3(-0.03f,0.25f,0));
+        im = wipro.getView().findViewById(R.id.im_pic);
         im.setImageResource(R.drawable.wipro);
 
-        Node c6 = createrotatingnode("Resume",s2,0.05f,5,halanx,0);
-        c6.setLocalScale(new Vector3(0.08f,0.08f,0.08f));
-        c6.setLocalPosition(new Vector3(-0.2f,-0.2f,0));
-        im = (ImageView) halanx.getView().findViewById(R.id.im_pic);
+
+
+        Node c2 = createNode("",s2,0.05f,escale,0,14);
+        c2.setLocalScale(new Vector3(0.11f,0.11f,0.11f));
+        c2.setLocalPosition(new Vector3(0.15f,0.2f,0));
+        im = escale.getView().findViewById(R.id.im_pic);
+        im.setImageResource(R.drawable.escale);
+
+
+
+        Node c3 = createNode("",s2,0.05f,fella,0,14);
+        c3.setLocalScale(new Vector3(0.12f,0.12f,0.12f));
+        c3.setLocalPosition(new Vector3(-0.23f,0.18f,0));
+        im = fella.getView().findViewById(R.id.im_pic);
+        im.setImageResource(R.drawable.fella);
+
+
+
+        Node c4 = createNode("",s2,0.05f,taproom,0,14);
+        c4.setLocalScale(new Vector3(0.2f,0.2f,0.2f));
+        c4.setLocalPosition(new Vector3(-0.20f,-0.07f,0));
+        im = taproom.getView().findViewById(R.id.im_pic);
+        im.setImageResource(R.drawable.taproom);
+
+
+
+        Node c5 = createNode("",s2,0.05f,zoruk,0,14);
+        c5.setLocalScale(new Vector3(0.1f,0.1f,0.1f));
+        c5.setLocalPosition(new Vector3(0.18f,-0.11f,0));
+        im = zoruk.getView().findViewById(R.id.im_pic);
+        im.setImageResource(R.drawable.zoruk);
+
+
+
+        Node c6 = createNode("",s2,0.05f,halanx,0,14);
+        c6.setLocalScale(new Vector3(0.1f,0.1f,0.1f));
+        c6.setLocalPosition(new Vector3(0.025f,-0.29f,0));
+        im =  halanx.getView().findViewById(R.id.im_pic);
         im.setImageResource(R.drawable.halanx);
+
+        c1.setEnabled(false);
+        c2.setEnabled(false);
+        c3.setEnabled(false);
+        c4.setEnabled(false);
+        c5.setEnabled(false);
+        c6.setEnabled(false);
+
+
+        Node met = createNode("Class 10th\n - 9.4 CGPA",s1,0.05f,metr,0,10);
+        met.setLocalScale(new Vector3(1f,1f,2f));
+        met.setLocalPosition(new Vector3(0.35f,0.25f,0.2f));
+
+
+        Node twelve = createNode("Class 12th\n - 90 %",s1,0.05f,twel,0,10);
+        met.setLocalScale(new Vector3(1f,1f,2f));
+        twelve.setLocalPosition(new Vector3(0.35f,0f,0.2f));
+
+
+        Node graduation = createNode("Graduation\n (B.Tech)\n - 8.4 CGPA",s1,0.05f,gradu,0,10);
+        met.setLocalScale(new Vector3(1f,1,2f));
+        graduation.setLocalPosition(new Vector3(0.35f,-0.25f,0.2f));
+
+        met.setEnabled(false);
+        twelve.setEnabled(false);
+        graduation.setEnabled(false);
+
+
+        sc.setOnTapListener((hitTestResult, motionEvent) -> s5.setEnabled(!s5.isEnabled()));
+        s3.setOnTapListener((hitTestResult, motionEvent) -> s4.setEnabled(!s4.isEnabled()));
+        s2.setOnTapListener((hitTestResult, motionEvent) ->{
+
+            c1.setEnabled(!c1.isEnabled());
+            c2.setEnabled(!c2.isEnabled());
+            c3.setEnabled(!c3.isEnabled());
+            c4.setEnabled(!c4.isEnabled());
+            c5.setEnabled(!c5.isEnabled());
+            c6.setEnabled(!c6.isEnabled());
+
+
+        } );
+
+        s1.setOnTapListener((hitTestResult, motionEvent) -> {
+            met.setEnabled(!met.isEnabled());
+            twelve.setEnabled(!twelve.isEnabled());
+            graduation.setEnabled(!graduation.isEnabled());
+
+        });
 
         return base;
     }
@@ -464,7 +531,7 @@ public class ResumeActivity extends AppCompatActivity {
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private Node createNode(String name, Node parent, float auFromParent, ViewRenderable renderable,int pos) {
+    private Node createNode(String name, Node parent, float auFromParent, ViewRenderable renderable,int pos,float textsize) {
         // Orbit is a rotating node with no renderable positioned at the sun.
         // The planet is positioned relative to the orbit so that it appears to rotate around the sun.
         // This is done instead of making the sun rotate so each planet can orbit at its own speed.
@@ -482,7 +549,13 @@ public class ResumeActivity extends AppCompatActivity {
         View v = renderable.getView();
         TextView textView = v.findViewById(R.id.planetInfoCard);
         textView.setVisibility(View.VISIBLE);
+        textView.setTextSize(textsize);
+
         textView.setText(name);
+
+        if (name.equals("")){
+            textView.setVisibility(View.GONE);
+        }
 
 
         return node;
