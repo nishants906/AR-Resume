@@ -74,7 +74,8 @@ public class ResumeActivity extends AppCompatActivity {
     private ArSceneView arSceneView;
 
     private ModelRenderable sunRenderable;
-    private ViewRenderable descriptiondata,descriptiondata1,descriptiondata2,descriptiondata3,resume,aboutme,fella,halanx,zoruk,wipro,taproom,escale,metr,twel,gradu;
+    private ViewRenderable descriptiondata,descriptiondata1,descriptiondata2,descriptiondata3,resume,aboutme,fella,halanx,
+            zoruk,wipro,taproom,escale,metr,twel,gradu,instructions;
 
     // True once scene is loaded
     private boolean hasFinishedLoading = false;
@@ -105,6 +106,10 @@ public class ResumeActivity extends AppCompatActivity {
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ar_scene_view);
         arSceneView = arFragment.getArSceneView();
 
+        arFragment.getPlaneDiscoveryController().hide();
+        arFragment.getPlaneDiscoveryController().setInstructionView(null);
+
+
         try {
             Session session = DemoUtils.createArSession(this, installRequested);
             Config config = new Config(session);
@@ -121,39 +126,42 @@ public class ResumeActivity extends AppCompatActivity {
 
 
 
+
+
+
+
 // To apply texture on plane rendering
 
-        Texture.Sampler sampler = Texture.Sampler.builder()
-                .setMinFilter(Texture.Sampler.MinFilter.LINEAR)
-                .setMagFilter(Texture.Sampler.MagFilter.LINEAR)
-
-                .setWrapMode(Texture.Sampler.WrapMode.REPEAT).build();
-
-        // Build texture with sampler
-        CompletableFuture<Texture> trigrid = Texture.builder()
-                .setSource(ResumeActivity.this,R.drawable.fill)
-                .setSampler(sampler).build();
-
-        // Set plane texture
-        this.arFragment.getArSceneView()
-                .getPlaneRenderer()
-                .getMaterial()
-                .thenAcceptBoth(trigrid, (material, texture) -> {
-                    material.setTexture(PlaneRenderer.MATERIAL_TEXTURE, texture);
-                })
-                .exceptionally(throwable -> {
-                    Log.d("enter1",throwable.getMessage());
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setMessage(throwable.getMessage()).setTitle("Error");
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                    return null;
-                });
+//        Texture.Sampler sampler = Texture.Sampler.builder()
+//                .setMinFilter(Texture.Sampler.MinFilter.LINEAR)
+//                .setMagFilter(Texture.Sampler.MagFilter.LINEAR)
+//
+//                .setWrapMode(Texture.Sampler.WrapMode.REPEAT).build();
+//
+//        // Build texture with sampler
+//        CompletableFuture<Texture> trigrid = Texture.builder()
+//                .setSource(ResumeActivity.this,R.drawable.fill)
+//                .setSampler(sampler).build();
+//
+//        // Set plane texture
+//        this.arFragment.getArSceneView()
+//                .getPlaneRenderer()
+//                .getMaterial()
+//                .thenAcceptBoth(trigrid, (material, texture) -> {
+//                    material.setTexture(PlaneRenderer.MATERIAL_TEXTURE, texture);
+//                })
+//                .exceptionally(throwable -> {
+//                    Log.d("enter1",throwable.getMessage());
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//                    builder.setMessage(throwable.getMessage()).setTitle("Error");
+//                    AlertDialog dialog = builder.create();
+//                    dialog.show();
+//                    return null;
+//                });
 //
 
         // Build all the planet models.
         CompletableFuture<ModelRenderable> sunStage = ModelRenderable.builder().setSource(this, Uri.parse("model__0.sfb")).build();
-
         CompletableFuture<ViewRenderable> descriptionstage = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
         CompletableFuture<ViewRenderable> descriptionstage1 = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
         CompletableFuture<ViewRenderable> descriptionstage2 = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
@@ -169,6 +177,7 @@ public class ResumeActivity extends AppCompatActivity {
         CompletableFuture<ViewRenderable> twelth = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
         CompletableFuture<ViewRenderable> grad = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
         CompletableFuture<ViewRenderable> resume1 = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
+        CompletableFuture<ViewRenderable> instruction = ViewRenderable.builder().setView(this, R.layout.planet_card_view).build();
 
         CompletableFuture.allOf(sunStage,descriptionstage,descriptionstage1,descriptionstage2,resume1).handle((notUsed, throwable) -> {
             // When you build a Renderable, Sceneform loads its resources in the background while
@@ -195,9 +204,9 @@ public class ResumeActivity extends AppCompatActivity {
                 metr = metric.get();
                 twel = twelth.get();
                 gradu = grad.get();
-
                 aboutme = about.get();
                 resume = resume1.get();
+                instructions = instruction.get();
 
 
                 // Everything finished loading successfully.
@@ -403,12 +412,16 @@ public class ResumeActivity extends AppCompatActivity {
         s2.setLocalPosition(new Vector3(-0.67f * AU_TO_METERS, -0.05f, 0.0f));
 
         Node s3 = createNode("Resume",sun,0.5f,descriptiondata3,0,14);
-        s3.setLocalPosition(new Vector3(0.0f,-0.8f * AU_TO_METERS, 0.0f));
+        s3.setLocalPosition(new Vector3(0.0f,-0.7f * AU_TO_METERS, 0.0f));
 
+        sc.setEnabled(false);
+        s1.setEnabled(false);
+        s2.setEnabled(false);
+        s3.setEnabled(false);
 
 
         Node s4 = createNode("",s3,0.5f,resume,0,14);
-        s4.setLocalPosition(new Vector3(-0.1f,-2f,2.5f * AU_TO_METERS));
+        s4.setLocalPosition(new Vector3(-0.0f,-2f,2.5f * AU_TO_METERS));
         s4.setEnabled(false);
 
         im = resume.getView().findViewById(R.id.im_pic);
@@ -426,7 +439,6 @@ public class ResumeActivity extends AppCompatActivity {
 
 
 
-
         Node c1 = createNode("",s2,0.05f,wipro,0,14);
         c1.setLocalScale(new Vector3(0.1f,0.1f,0.1f));
         c1.setLocalPosition(new Vector3(-0.03f,0.25f,0));
@@ -440,7 +452,6 @@ public class ResumeActivity extends AppCompatActivity {
         c2.setLocalPosition(new Vector3(0.15f,0.2f,0));
         im = escale.getView().findViewById(R.id.im_pic);
         im.setImageResource(R.drawable.escale);
-
 
 
         Node c3 = createNode("",s2,0.05f,fella,0,14);
@@ -483,21 +494,29 @@ public class ResumeActivity extends AppCompatActivity {
 
         Node met = createNode("Class 10th\n - 9.4 CGPA",s1,0.05f,metr,0,10);
         met.setLocalScale(new Vector3(1f,1f,2f));
-        met.setLocalPosition(new Vector3(0.35f,0.25f,0.2f));
+        met.setLocalPosition(new Vector3(0.25f,0.25f,0.2f));
 
 
-        Node twelve = createNode("Class 12th\n - 90 %",s1,0.05f,twel,0,10);
+        Node twelve = createNode("Class 12th\n - 91 %",s1,0.05f,twel,0,10);
         met.setLocalScale(new Vector3(1f,1f,2f));
         twelve.setLocalPosition(new Vector3(0.35f,0f,0.2f));
 
 
-        Node graduation = createNode("Graduation\n (B.Tech)\n - 8.4 CGPA",s1,0.05f,gradu,0,10);
+        Node graduation = createNode("Graduation\n (B.Tech)\n - 8.6 CGPA",s1,0.05f,gradu,0,10);
         met.setLocalScale(new Vector3(1f,1,2f));
-        graduation.setLocalPosition(new Vector3(0.35f,-0.25f,0.2f));
+        graduation.setLocalPosition(new Vector3(0.25f,-0.25f,0.2f));
 
         met.setEnabled(false);
         twelve.setEnabled(false);
         graduation.setEnabled(false);
+
+
+        sun.setOnTapListener((hitTestResult, motionEvent) ->{
+            sc.setEnabled(!sc.isEnabled());
+            s1.setEnabled(!s1.isEnabled());
+            s2.setEnabled(!s2.isEnabled());
+            s3.setEnabled(!s3.isEnabled());
+        });
 
 
         sc.setOnTapListener((hitTestResult, motionEvent) -> s5.setEnabled(!s5.isEnabled()));
@@ -567,14 +586,14 @@ public class ResumeActivity extends AppCompatActivity {
         // The planet is positioned relative to the orbit so that it appears to rotate around the sun.
         // This is done instead of making the sun rotate so each planet can orbit at its own speed.
 
-//        RotatingNode orbit = new RotatingNode( true);
-//        orbit.setDegreesPerSecond(orbitDegreesPerSecond);
-//        orbit.setParent(parent);
+        RotatingNode orbit = new RotatingNode( true);
+        orbit.setDegreesPerSecond(orbitDegreesPerSecond);
+        orbit.setParent(parent);
 
         // Create the planet and position it relative to the sun.
 
         Node node = new Node();
-        node.setParent(parent);
+        node.setParent(orbit);
         node.setRenderable(renderable);
 
 //        View v = renderable.getView();

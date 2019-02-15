@@ -30,6 +30,7 @@
         android:layout_below="@id/im_pic"
         android:layout_centerHorizontal="true"
         android:background="@drawable/rounded_bg"
+        android:textColor="#ffffff"
         android:gravity="center"
         android:visibility="gone"
         android:orientation="vertical"
